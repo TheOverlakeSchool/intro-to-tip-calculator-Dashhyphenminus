@@ -19,6 +19,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,11 +71,13 @@ class MainActivity : ComponentActivity() {
 fun TipTimeLayout() {
     /* *** amountInput will hold the value entered into the field */
     var amountInput by remember { mutableStateOf("") }
+    var tipInput by remember { mutableStateOf("") }
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
     /* *** This will hold our numeric version for calculation, checking to
     * ensure we don't have a null value. */
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     /* *** Calls the user defined function to figure out the tip amount */
-    val tip = calculateTip(amount)
+    val tip = calculateTip(amount, tipPercent)
 
     Column(
         modifier = Modifier
@@ -92,10 +96,26 @@ fun TipTimeLayout() {
         )
         /* *** User Defined function to better manage the textfields */
         EditNumberField(
+            label = R.string.bill_amount,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             value = amountInput,
             onValueChanged = { amountInput = it },
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            value = tipInput,
+            onValueChanged = {tipInput = it},
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -106,6 +126,8 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(
+    @StringRes label: Int,
+    keyboardOptions: KeyboardOptions,
     value: String,
     onValueChanged: (String) -> Unit,
     modifier: Modifier
@@ -121,10 +143,10 @@ fun EditNumberField(
         /* *** Lambda controlling what will happen when we change what is in the TextField */
         onValueChange = onValueChanged,
         /* *** Sets what will be in the "descriptor text" of the textfield */
-        label = { Text(stringResource(R.string.bill_amount)) },
+        label = { Text(stringResource(label)) },
         /* Controls what sort of letters and numbers may be entered into the text field,
         * Notably NOT the data type. */
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        keyboardOptions = keyboardOptions
     )
 }
 
