@@ -1,8 +1,6 @@
 package com.example.tiptime
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
@@ -30,6 +28,4 @@ class TipUITests {
             "No node with this text was found."
         )
     }
-
 }
-
